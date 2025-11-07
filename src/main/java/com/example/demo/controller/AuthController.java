@@ -2,9 +2,9 @@ package com.example.demo.controller;
 
 // import com.example.demo.*;
 import com.example.demo.dto.SignupRequest;
+import com.example.demo.dto.payload.LoginRequest;
+import com.example.demo.dto.payload.LoginResponse;
 import com.example.demo.model.User;
-import com.example.demo.payload.LoginRequest;
-import com.example.demo.payload.LoginResponse;
 import com.example.demo.service.UserService;
 import com.example.demo.util.JwtUtil;
 
