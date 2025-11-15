@@ -1,4 +1,4 @@
-package com.example.demo.dto.payload;
+package com.example.demo.config;
 
 import com.example.demo.util.JwtUtil;
 import jakarta.servlet.ServletException;

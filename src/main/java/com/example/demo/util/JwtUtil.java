@@ -45,7 +45,7 @@ public class JwtUtil {
                 .setIssuedAt(now)
                 .setExpiration(exp)
                 .claim("roles", roles)
-                .signWith(key, SignatureAlgorithm.ES256)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
     }
@@ -60,7 +60,7 @@ public class JwtUtil {
                 .setIssuedAt(now)
                 .setExpiration(exp)
                 .claim("type", "refresh")
-                .signWith(key, SignatureAlgorithm.ES256)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 

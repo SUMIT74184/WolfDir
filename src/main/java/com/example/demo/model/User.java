@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -26,6 +28,9 @@ public class User {
     private String password;
     private String phoneNumber;
     private String providerId;
+
+    @Column(name="image_url")
+    private String imageUrl;
 
     @Enumerated(EnumType.STRING)
     private Role role;

@@ -1,4 +1,4 @@
-package com.example.demo.dto.payload;
+package com.example.demo.exception;
 
 import java.util.Map;
 
@@ -9,5 +9,4 @@ public abstract class OAuth2UserInfo {
     public abstract String getId();
     public abstract String getName();
     public abstract String getEmail();
-    public abstract String getImageUrl();
 }
