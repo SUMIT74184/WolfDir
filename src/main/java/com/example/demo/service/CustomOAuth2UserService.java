@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.payload.OAuth2UserInfo;
-import com.example.demo.dto.payload.OAuth2UserInfoFactory;
+import com.example.demo.oauth.OAuth2UserInfo;
+import com.example.demo.oauth.OAuth2UserInfoFactory;
 import com.example.demo.exception.OAuth2AuthenticationProcessingException;
 import com.example.demo.model.AuthProvider;
 import com.example.demo.model.User;

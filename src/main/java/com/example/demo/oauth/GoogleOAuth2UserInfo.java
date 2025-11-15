@@ -1,4 +1,4 @@
-package com.example.demo.dto.payload;
+package com.example.demo.oauth;
 
 import java.util.Map;
 
@@ -22,5 +22,3 @@ public class GoogleOAuth2UserInfo extends OAuth2UserInfo {
         return (String) attributes.get("picture");
     }
 }
-
-   
