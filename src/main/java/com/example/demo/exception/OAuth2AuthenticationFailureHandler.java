@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -17,8 +18,21 @@ public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationF
     @Value("${app.oauth2.redirect-uri}")
     private String redirectUri;
 
+    private final HandlerExceptionResolver handlerExceptionResolver;
+
+    public OAuth2AuthenticationFailureHandler(HandlerExceptionResolver handlerExceptionResolver){
+        this.handlerExceptionResolver = handlerExceptionResolver;
+    }
+
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException exception) throws IOException, ServletException {
+
+                handlerExceptionResolver.resolveException(request,response,null,exception);
+                    if(response.isCommitted()){
+                        return;
+                    }
+                
         String targetUrl = UriComponentsBuilder.fromUriString(redirectUri)
                 .queryParam("error", exception.getLocalizedMessage())
                 .build().toUriString();
