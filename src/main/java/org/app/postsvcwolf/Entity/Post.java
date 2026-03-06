@@ -21,7 +21,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class post {
+public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -83,10 +83,17 @@ public class post {
     @Builder.Default
     private Long commentCount = 0L;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Long score = 0L;
 
     @Column(name = "view_count", nullable = false)
     @Builder.Default
     private Long viewCount = 0L;
+
+    @Column(name = "share_count", nullable = false)
+    @Builder.Default
+    private Long shareCount = 0L;
 
     @Column(name = "is_nsfw",nullable = false)
     @Builder.Default
