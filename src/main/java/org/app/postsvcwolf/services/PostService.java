@@ -123,6 +123,12 @@ public class PostService {
         postRepository.incrementViewCount(postId);
     }
 
+    @Cacheable(value = "feed", key = "#subredditId + '_' + #pageable.pageNumber")
+    public Page<PostResponse> getSubredditPosts(String subredditId, Pageable pageable, String userId) {
+        Page<Post> posts = postRepository.findBySubreddit(subredditId, pageable);
+        return posts.map(post -> mapToResponse(post, userId));
+    }
+
     @Cacheable(value = "trending", key = "'all_' + #pageable.pageNumber")
     public Page<PostResponse> getTrendingPosts(Pageable pageable,String userId){
         LocalDateTime since = LocalDateTime.now().minusHours(24);
