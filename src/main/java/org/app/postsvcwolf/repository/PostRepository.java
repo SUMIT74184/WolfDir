@@ -35,6 +35,11 @@ public interface PostRepository extends JpaRepository<Post,String> {
             "AND p.createdAt >= :since ORDER BY p.score DESC, p.createdAt DESC")
     Page<Post> findTrending(@Param("since") LocalDateTime since, Pageable pageable);
 
+    @Query("SELECT p FROM Post p WHERE p.subredditId = :subredditId " +
+            "AND p.isRemoved = false AND p.isSpam = false " +
+            "ORDER BY p.score DESC, p.createdAt DESC")
+    Page<Post> findHot(@Param("subredditId") String subredditId, Pageable pageable);
+
 
 
     // Search ...later will move towards the elastic search

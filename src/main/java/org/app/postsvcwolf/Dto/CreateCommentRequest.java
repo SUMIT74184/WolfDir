@@ -2,7 +2,10 @@ package org.app.postsvcwolf.Dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.*;
 
+
+@Data
 public class CreateCommentRequest {
 
     @NotBlank(message = "Post ID is required")

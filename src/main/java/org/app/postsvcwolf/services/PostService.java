@@ -10,6 +10,9 @@ import org.app.postsvcwolf.Event.PostCreatedEvent;
 import org.app.postsvcwolf.repository.PostRepository;
 import org.app.postsvcwolf.repository.VoteRepository;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +62,7 @@ public class PostService {
             post.setMediaUrl(request.getLinkUrl());
         }
 
-        post = PostRepository.save(post);
+        post = postRepository.save(post);
 
 
         //getting media,post,user and saving the post
@@ -105,6 +108,41 @@ public class PostService {
         return mapToResponse(repost, userId);
 
     }
+
+    @Cacheable(value = "posts",key = "#postId")
+    public PostResponse getPost(String postId,String userId){
+        Post post = postRepository.findActive(postId)
+                .orElseThrow(()->new RuntimeException("Post not found"));
+
+
+        return mapToResponse(post,userId);
+    }
+
+    @Transactional
+    public void incrementViewCount(String postId){
+        postRepository.incrementViewCount(postId);
+    }
+
+    @Cacheable(value = "trending", key = "'all_' + #pageable.pageNumber")
+    public Page<PostResponse> getTrendingPosts(Pageable pageable,String userId){
+        LocalDateTime since = LocalDateTime.now().minusHours(24);
+        Page<Post> posts = postRepository.findTrending(since,pageable);
+        return posts.map(post -> mapToResponse(post,userId));
+    }
+
+    @Cacheable(value = "hot", key = "#subredditId + '_' + #pageable.pageNumber")
+    public Page<PostResponse> getHotPosts(String subredditId, Pageable pageable, String userId) {
+        Page<Post> posts = postRepository.findHot(subredditId, pageable);
+        return posts.map(post -> mapToResponse(post, userId));
+
+    }
+
+
+    public Page<PostResponse> searchPosts(String query, Pageable pageable, String userId) {
+        Page<Post> posts = postRepository.search(query, pageable);
+        return posts.map(post -> mapToResponse(post, userId));
+    }
+
 
     @Transactional
     @CacheEvict(value = {"posts", "feed"}, allEntries = true)
@@ -204,7 +242,43 @@ public class PostService {
             Optional<Vote>vote = voteRepository.findByUserAndTarget(
                     userId, post.getId(), Vote.TargetType.POST
             );
+            userVote = vote.map(v->v.getVoteType().name()).orElse(null);
         }
+
+        return PostResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .userId(post.getUserId())
+                .username(post.getUsername())
+                .subredditId(post.getSubredditId())
+                .subredditName(post.getSubredditName())
+                .type(post.getType())
+                .mediaUrl(post.getMediaUrl())
+                .thumbnailUrl(post.getThumbnailUrl())
+                .aiSummary(post.getAiSummary())
+                .hashtags(post.getHashtags())
+                .mentions(post.getMentions())
+                .upvotes(post.getUpVotes())
+                .downvotes(post.getDownVotes())
+                .score(post.getScore())
+                .commentCount(post.getCommentCount())
+                .viewCount(post.getViewCount())
+                .shareCount(post.getShareCount())
+                .isNsfw(post.getIsNsfw())
+                .isSpoiler(post.getIsSpoiler())
+                .isLocked(post.getIsLocked())
+                .isArchived(post.getIsArchived())
+                .isRepost(post.getIsRepost())
+                .originalPostId(post.getOriginalPostId())
+                .userVote(userVote)
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .editedAt(post.getEditedAt())
+                .build();
+
+
+
     }
 
 
