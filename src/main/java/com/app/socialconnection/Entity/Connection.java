@@ -1,4 +1,4 @@
-package com.example.socialconnection.Entity;
+package com.app.socialconnection.Entity;
 
 
 import jakarta.persistence.*;

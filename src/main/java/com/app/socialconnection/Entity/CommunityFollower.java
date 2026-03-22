@@ -1,4 +1,4 @@
-package com.example.socialconnection.Entity;
+package com.app.socialconnection.Entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -39,12 +39,10 @@ public class CommunityFollower {
     @Column
     private boolean notificationsEnabled;
 
-    protected void onCreate(){
+    @PrePersist
+    protected void onCreate() {
         followedAt = LocalDateTime.now();
-        if(!notificationsEnabled){
-            notificationsEnabled=true;
-        }
-
+        notificationsEnabled = true;
     }
 
 }
