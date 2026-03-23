@@ -42,6 +42,10 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
     // Delete a specific connection
     void deleteByUserIdAndFollowerId(Long userId, Long followerId);
 
+    // Get follower IDs for a user (people who follow this userId)
+    @Query("SELECT c.followerId FROM Connection c WHERE c.userId = :userId AND c.status = 'ACCEPTED'")
+    List<Long> findFollowerIdsByUserId(Long userId);
+
     // Find all connections between two users (for cleanup when blocking)
     @Query("SELECT c FROM Connection c WHERE (c.userId = :userA AND c.followerId = :userB) " +
             "OR (c.userId = :userB AND c.followerId = :userA)")

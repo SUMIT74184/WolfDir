@@ -6,17 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * 🎓 LEARNING: Kafka Producer Service
  *
  * This service publishes events to Kafka topics. Other microservices
- * (like Notification Service) consume these events and react to them.
- *
- * KafkaTemplate.send(topic, key, value):
- * - topic: which Kafka topic to publish to
- * - key: used for partitioning (same key → same partition → ordered)
- *         We use receiverId so all events for one user go to the same partition
- * - value: the event object (serialized to JSON by our KafkaConfig)
+ * (like Notification Service, Feed Service) consume these events and react to them.
  */
 @Service
 @RequiredArgsConstructor
@@ -27,6 +25,7 @@ public class KafkaProducerService {
 
     private static final String CONNECTION_EVENTS_TOPIC = "connection-events";
     private static final String BLOCK_EVENTS_TOPIC = "block-events";
+    private static final String FEED_FANOUT_TOPIC = "feed.fanout";
 
     public void publishConnectionEvent(ConnectionRequestEvent event) {
         log.info("Publishing connection event: {} -> {} [{}]",
@@ -40,5 +39,16 @@ public class KafkaProducerService {
                 event.getSenderId(), event.getReceiverId());
         kafkaTemplate.send(BLOCK_EVENTS_TOPIC,
                 String.valueOf(event.getReceiverId()), event);
+    }
+
+    public void publishFeedFanoutEvent(String postId, Long authorId, String type, List<Long> followerIds) {
+        Map<String, Object> fanoutEvent = new HashMap<>();
+        fanoutEvent.put("postId", postId);
+        fanoutEvent.put("authorId", authorId);
+        fanoutEvent.put("type", type);
+        fanoutEvent.put("followerIds", followerIds);
+
+        log.info("Publishing feed fanout event: postId={}, followers={}", postId, followerIds.size());
+        kafkaTemplate.send(FEED_FANOUT_TOPIC, postId, fanoutEvent);
     }
 }
